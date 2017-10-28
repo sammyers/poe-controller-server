@@ -1,0 +1,16 @@
+{
+  "name": "poe-controller-server",
+  "version": "1.0.0",
+  "description": "Basic API for controlling a kinetic sculpture.",
+  "main": "index.js",
+  "scripts": {
+    "start": "./index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Sam Myers <sammyers.dev@gmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.16.2",
+    "serialport": "^6.0.3"
+  }
+}
