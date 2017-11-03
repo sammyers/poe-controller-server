@@ -13,11 +13,16 @@ void setup() {
 void loop() {
   if (Serial.available() > 0) {
     String command = Serial.readStringUntil('\n');
-    Serial.println(command);
     if (command == "ON") {
       state = HIGH;
     } else if (command == "OFF") {
       state = LOW;
+    } else if (command == "STATUS") {
+      if (state == HIGH) {
+        Serial.println("ON");
+      } else {
+        Serial.println("OFF");
+      }
     }
   }
   digitalWrite(WIRE_PIN, state);

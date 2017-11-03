@@ -10,15 +10,26 @@ const app = express();
 const port = new SerialPort(SERIAL_DEVICE, { baudRate: SERIAL_BAUD_RATE }, false);
 const parser = port.pipe(new Readline());
 
-function writeToSerial(command) {
+const jobQueue = [];
+
+function writeToSerial(command, callback) {
   port.write(command, 'ascii', err => {
     if (err) {
       console.log('Error writing to serial port.');
       return;
     }
     console.log(command, 'command written to serial port.');
+    if (callback) callback();
   })
 }
+
+app.get('/status', (request, response) => {
+  writeToSerial('STATUS', () => {
+    jobQueue.unshift(status => {
+      response.json({ status })
+    });
+  });
+});
 
 app.post('/on', (request, response) => {
   writeToSerial('ON');
@@ -39,5 +50,8 @@ app.listen(PORT, err => {
 })
 
 port.on('data', data => {
-  console.log('Arduino output:', data.toString('ascii'));
+  const callback = jobQueue.pop();
+  const dataString = data.toString('ascii').trim();
+  callback(dataString);
+  console.log('Arduino output:', dataString);
 });
