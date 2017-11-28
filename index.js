@@ -26,7 +26,7 @@ function writeToSerial(command, callback) {
 app.get('/status', (request, response) => {
   writeToSerial('STATUS', () => {
     jobQueue.unshift(status => {
-      response.json({ status })
+      response.json({ status, color: 'none' })
     });
   });
 });
