@@ -27,6 +27,9 @@ LanternState lanternState = { 0, 0, 0 };
 int pulseState = LOW;
 int pwmPulseState = 0;
 
+int sensorValue = 0;
+bool sensorOn = false;
+
 /*
  * Calls provided function with the provided `data` argument if a given
  * interval (in milliseconds) has elapsed.
@@ -55,7 +58,9 @@ void writeStatus() {
 }
 
 void toggleLantern() {
-  updateLightPWM();
+  if (lanternState.lightMode != 2) {
+    updateLightPWM();
+  }
   digitalWrite(WIRE_PIN, pulseState);
 }
 
@@ -76,13 +81,33 @@ void updateLightPWM() {
   }
 }
 
-void sensorUpdate() {
+void checkSensor() {
+  sensorValue = analogRead(SENSOR_PIN);
+  if (sensorValue > 350) {
+    sensorOn = true;
+  } else {
+    sensorOn = false;
+  }
+}
 
+void sensorUpdate() {
+  executeIfTimeElapsed(checkSensor, pulseInterval, NULL);
+  if (sensorOn) {
+    digitalWrite(WIRE_PIN, HIGH);
+    analogWrite(LED_PIN, 255);
+  } else {
+    digitalWrite(WIRE_PIN, LOW);
+    analogWrite(LED_PIN, 0);
+  }
+}
+
+void updateLightBrightness() {
+  analogWrite(LED_PIN, map(pwmPulseState, 0, 99, 0, 255));
 }
 
 void pulseLight() {
   executeIfTimeElapsed(updateLightPWM, pwmPulseInterval, NULL);
-  analogWrite(LED_PIN, map(pwmPulseState, 0, 99, 0, 255));
+  updateLightBrightness();
 }
 
 void updateLight() {

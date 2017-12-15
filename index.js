@@ -76,7 +76,6 @@ app.get('/status', (request, response) => {
 });
 
 app.post('/update', (request, response) => {
-  let success;
   try {
     writeLanternUpdate(request.body, status => {
       response.json(bitFieldToStatus(status));
